@@ -21,13 +21,13 @@ additional_features_df = df[['age', 'gender', 'MSI']]
 
 # weightage
 weight_genes = st.slider("Select Weightage for Genomic Data",10, 90, 80)
-weight_additional = st.slider("Select Weightage for Clinical Data",10, 90, 20)
+weight_additional = st.slider("Select Weightage for Clinical Data",10, 90, 100-weight_genes)
 
 weighted_genes_df = genes_df * weight_genes
 weighted_additional_features_df = additional_features_df * weight_additional
 combined_df = pd.concat([weighted_genes_df, weighted_additional_features_df], axis=1)
 
-st.dataframe(combined_df)
+# st.dataframe(combined_df)
 # Compute cosine similarity for the combined data
 similarity_matrix = cosine_similarity(combined_df)
 
