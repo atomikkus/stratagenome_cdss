@@ -6,14 +6,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 st.title('4baseCare CDSS support')
 
-ddf = pd.read_csv('raw_data_combi.csv', index_col=0)
+ddf = pd.read_csv('combi_data.csv', index_col=0)
 
 
 df = ddf.copy()
 scaler = MinMaxScaler()
 df[['age', 'MSI']] = scaler.fit_transform(df[['age', 'MSI']])
 df['gender'] = df['gender'].map({'MALE': 0, 'FEMALE': 1}) #encoding
-genes_df = df[ddf.iloc[:,:751].columns.to_list()]
+genes_df = df[ddf.drop(['age', 'gender', 'MSI'], axis=1).columns.to_list()]
 additional_features_df = df[['age', 'gender', 'MSI']]
 
 
@@ -27,7 +27,8 @@ weighted_genes_df = genes_df * weight_genes
 weighted_additional_features_df = additional_features_df * weight_additional
 combined_df = pd.concat([weighted_genes_df, weighted_additional_features_df], axis=1)
 
-# st.dataframe(combined_df)
+#st.dataframe(combined_df)
+
 # Compute cosine similarity for the combined data
 similarity_matrix = cosine_similarity(combined_df)
 
@@ -64,7 +65,7 @@ if st.sidebar.button('Find Similar Patients'):
     col1, col2 = st.columns(2)
     with col1:
         st.markdown(f"**Age:** {patient_info['age']}")
-        st.markdown(f"**Gender:** {'MALE' if patient_info['gender'] == 0 else 'FEMALE'}")
+        st.markdown(f"**Gender:** {'MALE' if patient_info['gender'] == 'MALE' else 'FEMALE'}")
         st.markdown(f"**MSI:** {patient_info['MSI']}")
     with col2:
         st.markdown(f"**Mutated Genes:** {', '.join(patient_common_genes)}")
@@ -77,7 +78,7 @@ if st.sidebar.button('Find Similar Patients'):
         similar_patient_info = ddf.iloc[idx]
         common_genes = get_common_genes(patient_index, idx)
         age = similar_patient_info['age']
-        gender = 'MALE' if similar_patient_info['gender'] == 0 else 'FEMALE'
+        gender = 'MALE' if similar_patient_info['gender'] == 'MALE' else 'FEMALE'
         MSI = similar_patient_info['MSI']
         
         with st.container():
